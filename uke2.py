@@ -1,4 +1,5 @@
 import numpy as np
+
 #oppgave 1a
 x1 = np.array([0, -3, 2, 2, 1, 0, 4, -1])
 x2 = np.array([-1, 2, -3, -3, 0, 0, 0, 0])
@@ -16,3 +17,20 @@ print('y3= ', y3)
 #terminal: y3= [ 0 -6 -6 -6  0  0  0  0]
 
 
+#oppgave 4
+def konvolver(a, b):
+    conv = np.zeros(2*len(a))
+    for x in range(2*len(a)):
+        for y in range(2*len(b)):
+            conv[x] = a[y] * b[y]
+
+
+    
+    if conv == np.convolve(a,b):
+        print('success')
+    else:
+        print('something wrong')
+
+    return conv
+    
+konvolver(x1, x2)
