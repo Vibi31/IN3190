@@ -2,7 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def convolve(x,ylen,h):
+def konvin3190(x,ylen,h):
     M, N = len(h), len(x)
     y = np.zeros(M+N-1)
     
@@ -13,6 +13,6 @@ def convolve(x,ylen,h):
             
     if ylen == 0: #needs to return with the length of 'x'
         a, b = np.floor(0.5*(M-1)), np.ceil(0.5*(M-1) +1)
-        return y(b:len(y)-a)
+        return y[b:len(y)-a]
     else:
         return y
