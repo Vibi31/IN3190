@@ -1,7 +1,5 @@
 #oppgave 1 konvulusjon
-import numpy as np
-from numpy import pi, exp, sin
-import matplotlib.pyplot as plt
+
 import numpy as np
 from numpy import pi, exp, sin, log10
 import matplotlib.pyplot as plt
@@ -51,11 +49,6 @@ N = 100
 X, f_1 = frekspekin3190(x, N, fs)
 Y, f_2 = frekspekin3190(y_sig, N, fs)
 
-plt.plot(t, abs(X))
-plt.show()
-
-plt.plot(f_1, abs(X))
-plt.show()
 
 
 
@@ -101,43 +94,18 @@ def filter_seis(seismogram, filter_type):
         filtered[:,i] = konvin3190(seismogram[:,i],0, filter_type)
     return filtered
 
-plt.title('filtret seismogram 1 med h1-filter ')
-plt.plot(time[0:m-1], filter_seis(seis1, h1))
-#plt.legend(['uten vindusfunksjon', 'med vindusfunksjon'])
-plt.xlabel('Tid [s]')
-plt.ylabel('Amplitude av seismogram')
-plt.show()
 
-plt.title('filtret seismogram 1 med h2-filter ')
-plt.plot(time[0:m-1], filter_seis(seis1, h2))
-#plt.legend(['uten vindusfunksjon', 'med vindusfunksjon'])
-plt.xlabel('Tid [s]')
-plt.ylabel('Amplitude av seismogram')
-plt.show()
-offset1_isolated = seis1[0:500, 0] #røde område
-time_isolated = time[0:500]
 
-#plotter trasen i over den bestemte tids-intervallet
-plt.plot(time_isolated, offset1_isolated)
-plt.title('trasen vi skal analysere (tids-domenet)')
+plt.plot(time[175:929], abs(konvin3190(seis1[175:930, 0], 0, h1)))
+plt.plot(time[175:929], abs(konvin3190(seis1[175:930, 100], 0, h1)))
+plt.title('2 trase refleksjoner')
+#første bølgetopper
+plt.plot(0.824, 0.00716, marker = 'x')
+plt.plot(1.108, 0.0132, marker = 'x')
+#bølgetopper 2
+plt.plot(1.5960, 0.001518, marker = 'x')
+plt.plot(1.7599, 0.002627, marker = 'x')
+
 plt.xlabel('tid [s]')
 plt.ylabel('amplitude')
-plt.show()
-
-#plotter frekvens spekteret:
-sampling_f = 1/(time[2]-time[1])
-f1, fs = frekspekin3190(offset1_isolated, 200, sampling_f)
-plt.title('frekvensspekter til bestemt trasen')
-plt.plot(fs, 20*log10(abs(f1)))
-plt.xlabel('frekvens [Hz]')
-plt.ylabel('amplitude')
-plt.show()
-vin_of1 = tukey(len(offset1_isolated), 0.5)*offset1_isolated
-F_wo1, fs_wo1 = frekspekin3190(vin_of1, 200, sampling_f)
-
-plt.plot(fs_wo1, 20*log10(abs(F_wo1)), fs, 20*log10(abs(f1)))
-plt.legend(['med vindus', 'uten vindus'])
-plt.show()
-
-plt.plot(fs_wo1, abs(F_wo1), fs, abs(f1))
 plt.show()
