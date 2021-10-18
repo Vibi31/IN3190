@@ -2,6 +2,11 @@
 import numpy as np
 from numpy import pi, exp, sin
 import matplotlib.pyplot as plt
+import numpy as np
+from numpy import pi, exp, sin, log10
+import matplotlib.pyplot as plt
+from scipy.signal import tukey
+import scipy.io
 
 #oppgave 1a konvulusjon 
 def konvin3190(x,ylen,h):
@@ -74,4 +79,65 @@ h2 = [-0.0002, -0.0001, 0.0003, 0.0005, -0.0001, -0.0009, -0.0007,
     0.0069, -0.0023, -0.0067, -0.0028, 0.0031, 0.0042, 0.0004, -0.0027, 
     -0.0021, 0.0005, 0.0018, 0.0007, -0.0007, -0.0009, -0.0001, 0.0005, 
     0.0003, -0.0001, -0.0002]
+#importerer alle sub-filene
+mat_fil = scipy.io.loadmat('vibishar.mat')
 
+offset1 = np.array(mat_fil['offset1'])
+offset2 = np.array(mat_fil['offset2'])
+seis1 = np.array(mat_fil['seismogram1'])
+seis2 = np.array(mat_fil['seismogram2'])
+time = np.array(mat_fil['t']) 
+
+print('lenth of time array:', len(time))
+print('lenth of seis1 array:', len(seis1))
+print('lenth of seis2 array:', len(seis2))
+m,n = np.shape(seis1)
+def filter_seis(seismogram, filter_type):
+    m,n = np.shape(seismogram)
+    filtered = np.zeros((m-1,n)) #tom array for filterert seismogram
+
+    #filterer en rad om gangen ved å bruke hvor konvin funksjon:
+    for i in range(9):  #første fem radene
+        filtered[:,i] = konvin3190(seismogram[:,i],0, filter_type)
+    return filtered
+
+plt.title('filtret seismogram 1 med h1-filter ')
+plt.plot(time[0:m-1], filter_seis(seis1, h1))
+#plt.legend(['uten vindusfunksjon', 'med vindusfunksjon'])
+plt.xlabel('Tid [s]')
+plt.ylabel('Amplitude av seismogram')
+plt.show()
+
+plt.title('filtret seismogram 1 med h2-filter ')
+plt.plot(time[0:m-1], filter_seis(seis1, h2))
+#plt.legend(['uten vindusfunksjon', 'med vindusfunksjon'])
+plt.xlabel('Tid [s]')
+plt.ylabel('Amplitude av seismogram')
+plt.show()
+offset1_isolated = seis1[0:500, 0] #røde område
+time_isolated = time[0:500]
+
+#plotter trasen i over den bestemte tids-intervallet
+plt.plot(time_isolated, offset1_isolated)
+plt.title('trasen vi skal analysere (tids-domenet)')
+plt.xlabel('tid [s]')
+plt.ylabel('amplitude')
+plt.show()
+
+#plotter frekvens spekteret:
+sampling_f = 1/(time[2]-time[1])
+f1, fs = frekspekin3190(offset1_isolated, 200, sampling_f)
+plt.title('frekvensspekter til bestemt trasen')
+plt.plot(fs, 20*log10(abs(f1)))
+plt.xlabel('frekvens [Hz]')
+plt.ylabel('amplitude')
+plt.show()
+vin_of1 = tukey(len(offset1_isolated), 0.5)*offset1_isolated
+F_wo1, fs_wo1 = frekspekin3190(vin_of1, 200, sampling_f)
+
+plt.plot(fs_wo1, 20*log10(abs(F_wo1)), fs, 20*log10(abs(f1)))
+plt.legend(['med vindus', 'uten vindus'])
+plt.show()
+
+plt.plot(fs_wo1, abs(F_wo1), fs, abs(f1))
+plt.show()
